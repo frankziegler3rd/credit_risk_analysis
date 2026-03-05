@@ -1,7 +1,7 @@
-## Choosing a dataset
+# Choosing a dataset
 
 I probably spent the most amount of time on this assignment choosing a dataset. I was trying to find something binary that I could classify, specifically something that has nulls or redundant columns or whatever, but I couldn't really find anything I liked. The dataset I did choose, "Credit Card Approval", ended up being mostly clean -- no nulls, *mostly* relevant columns, etc. 
-### The Dataset itself // Cleaning the data
+## The Dataset itself // Cleaning the data
 
 The dataset is pretty self explanatory. Each entry is a credit card applicant. The features that describe each applicant include categorical data like their age, gender, # of children, marital status, whether or not they own property or a car, etc. It also includes their yearly income. The target variable (aptly named `'TARGET'`) is already binarized -- 1 for credit risks, 0 for non-risks. 
 
@@ -10,13 +10,13 @@ Despite the data being relatively clean I did note that for classification purpo
 I also removed `'STATUS'`, which to me is still unclear (values were 0, X, C, ...?) and `'NAME_HOUSING_TYPE'`, which I found redundant given we had a flag for whether or not applicants owned property. 
 
 I also performed some small conversions on the numerical data as some of them were stored as negative values. An example of this is `'DAYS_EMPLOYED`, where the values were negative. I'm not exactly sure why this was the case, but my assumption is that the calculation used for these columns subtracted certain dates (like `'employment_date'`) from the date the application was submitted. 
-### Outliers Removed
+## Outliers Removed
 
 I don't believe this needs much explanation. I used the $\text{IQR}$ formula to find outliers based on applicant total income, total number of days employed, and age. These are outliers I feel could skew the classification results later down the line. 
-### MinMax Normalization
+## MinMax Normalization
 
 Some classification models, like KNN (which is distance-based) may be sensitive to large numbers like salary. I felt that if I was going to use KNN as a classification model it was necessary to scale the salary (and I did `'DAYS_EMPLOYED'` as well) down to a much smaller range so there wouldn't be any issues. 
-## Sampling the Data
+# Sampling the Data
 
 Another ***massive*** issue with this dataset is the extreme class imbalance in the `'TARGET'` feature. 
 
@@ -26,7 +26,8 @@ Another ***massive*** issue with this dataset is the extreme class imbalance in 
 | ------ | ------ |
 | 0      | 481264 |
 | 1      | 1730   |
-Funny thing -- I tried to ignore this at first because I have not done any sampling before in any of our programming assignments. Then, when I actually trained the DecisionTree model, the training and test scores were both $\approx 0.99$. So either, the DT model was really excellent, or it was more likely that the model was overfitting. So, I gave up and decided to try my hand at sampling. 
+
+Funny thing -- I tried to ignore this at first because I have not done any sampling before. Then, when I actually trained the DecisionTree model, the training and test scores were both $\approx 0.99$. So either, the DT model was really excellent, or it was more likely that the model was overfitting. So, I gave up and decided to try my hand at sampling. 
 
 I'm not exactly well-versed in the sampling techniques so the only thing that made sense to me was to sample the data so that the target column was 50-50. I'm sure that there is a better way to do this, and frankly this might even violate the requirement of having 10,000+ rows for this assignment, but I wasn't exactly sure how else to do this without getting too complicated. So, I split the data by target values 0 and 1, and used the sample function to take $n$ samples of the majority class (where $n$ is the size of the minority class), and strung the dataset back together through concatenation. This netted me:
 
@@ -34,11 +35,10 @@ I'm not exactly well-versed in the sampling techniques so the only thing that ma
 | ------ | ---- |
 | 1      | 1730 |
 | 0      | 1730 |
-Again, I didn't have any other methods. This results in what I would describe as "catastrophic" data loss, but it makes for a more reliable model. So maybe I'll learn more about sampling methods down the line but I'm already in the hole on this assignment so I chose to stick with this method. 
-## Models
 
-So, I stuck with the three that we used from PA2. Not sure if this is what we were supposed to do but I wasn't familiar with any other models. 
-### KNN
+Again, I didn't have any other methods. This results in what I would describe as "catastrophic" data loss, but it makes for a more reliable model. So maybe I'll learn more about sampling methods down the line. 
+# Models
+## KNN
 
 I tested $k$ from $2$ to $20$. These were the results:
 ```
@@ -64,7 +64,7 @@ K: 20 | Training Score: 0.6929190751445087 | Test Score: 0.630057803468208
 ```
 
 Honestly, not the greatest. The best scores are from KNN models (2, 3) that arguably have yet to see enough diverse data. So, I chose the best KNN to be $k=6$. It has the best training and testing score without being severely undertrained, or over/underfit. 
-### DecisionTrees
+## DecisionTrees
 
 Using the DecisionTreeClassifier we netted scores:
 ```
@@ -75,14 +75,14 @@ Test: 0.884393063583815
 DTC did suspiciously well on the training data. But then also did not-so-suspiciously well on the test data.
 
 To find the best DecisionTree model, I used `GridSearchCV` to find the best model with the best F1 score. 
-### Naive Bayes
+## Naive Bayes
 
 Naive Bayes did extremely poorly on this dataset. Not sure why.
 ```
 Train: 0.5924855491329479
 Test: 0.5606936416184971
 ```
-## Model Evaluation
+# Model Evaluation
 
 I followed the playbook for PA2 and scored each model based on F1, precision, and recall. Note the results:
 ```
