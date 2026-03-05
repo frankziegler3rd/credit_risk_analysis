@@ -1,3 +1,4 @@
+# Credit Risk Analysis Overview
 # Choosing a dataset
 
 I probably spent the most amount of time on this assignment choosing a dataset. I was trying to find something binary that I could classify, specifically something that has nulls or redundant columns or whatever, but I couldn't really find anything I liked. The dataset I did choose, "Credit Card Approval", ended up being mostly clean -- no nulls, *mostly* relevant columns, etc. 
